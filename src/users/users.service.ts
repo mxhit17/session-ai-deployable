@@ -14,74 +14,82 @@ export class UsersService {
   ) {}
 
   async registerUser(
-    name: string,
-    email: string,
-    password: string,
-    roleName: string
-  ) {
-    return this.prisma.$transaction(async (tx) => {
-      // 1. Check existing user
-      const existing = await tx.users.findUnique({
-        where: { email },
-      });
+  name: string,
+  email: string,
+  password: string,
+  roleName: string
+) {
+    try {
+      return await this.prisma.$transaction(async (tx) => {
+        // 1. Check existing user
+        const existing = await tx.users.findUnique({
+          where: { email },
+        });
 
-      if (existing) {
-        throw new BadRequestException('Email already registered');
-      }
+        if (existing) {
+          throw new BadRequestException('Email already registered');
+        }
 
-      // 2. Validate role exists
-      const role = await tx.roles.findUnique({
-        where: { name: roleName },
-      });
+        // 2. Validate role exists
+        const role = await tx.roles.findUnique({
+          where: { name: roleName },
+        });
 
-      if (!role) {
-        throw new BadRequestException('Invalid role provided');
-      }
+        console.log('ROLE:', role);
 
-      // 3. Hash password
-      const hash = await bcrypt.hash(password, 10);
+        if (!role) {
+          throw new BadRequestException('Invalid role provided');
+        }
 
-      // 4. Create user
-      const user = await tx.users.create({
-        data: {
-          full_name: name,
-          email,
-          password_hash: hash,
-        },
-      });
+        // 3. Hash password
+        const hash = await bcrypt.hash(password, 10);
 
-      // 5. Assign role
-      await tx.user_roles.create({
-        data: {
-          user_id: user.id,
-          role_id: role.id,
-        },
-      });
+        console.log('HASH:', hash);
 
-      // 6. Generate JWT payload
-      const payload = {
-        sub: user.id,
-        email: user.email,
-        role: role.name,
-      };
+        // 4. Create user
+        const user = await tx.users.create({
+          data: {
+            full_name: name,
+            email,
+            password_hash: hash,
+          },
+        });
 
-      // 7. Sign token
-      // const access_token = this.jwtService.sign(payload);
-      const token = this.jwtService.sign(payload);
+        console.log('USER CREATED:', user);
 
-      // 8. Return response
-      return {
-        user: {
-          id: user.id,
-          full_name: user.full_name,
+        // 5. Assign role
+        await tx.user_roles.create({
+          data: {
+            user_id: user.id,
+            role_id: role.id,
+          },
+        });
+
+        // 6. Generate JWT payload
+        const payload = {
+          sub: user.id,
           email: user.email,
           role: role.name,
-          created_at: user.created_at,
-        },
-        // access_token,
-        token,
-      };
-    });
+        };
+
+        const token = this.jwtService.sign(payload);
+
+        return {
+          user: {
+            id: user.id,
+            full_name: user.full_name,
+            email: user.email,
+            role: role.name,
+            created_at: user.created_at,
+          },
+          token,
+        };
+      });
+    } catch (error) {
+      console.error('FULL REGISTER ERROR:', error);
+
+      throw error;
+    }
   }
 
   async loginUser(email: string, password: string) {
