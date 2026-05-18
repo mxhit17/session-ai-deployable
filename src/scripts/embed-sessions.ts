@@ -1,7 +1,8 @@
 // import * as dotenv from 'dotenv';
 // dotenv.config({ path: '../.env' });
 import 'dotenv/config';
-import { PrismaClient } from '../../prisma/generated/client';
+// import { PrismaClient } from '../../prisma/generated/client';
+import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { InferenceClient } from '@huggingface/inference';
 
