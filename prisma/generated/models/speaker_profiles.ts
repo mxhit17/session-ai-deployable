@@ -8,7 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
-import type * as runtime from "@prisma/client/runtime/client"
+import type * as runtime from "@prisma/client/runtime/library"
 import type * as $Enums from "../enums"
 import type * as Prisma from "../internal/prismaNamespace"
 
@@ -165,7 +165,7 @@ export type Speaker_profilesGroupByOutputType = {
   _max: Speaker_profilesMaxAggregateOutputType | null
 }
 
-export type GetSpeaker_profilesGroupByPayload<T extends speaker_profilesGroupByArgs> = Prisma.PrismaPromise<
+type GetSpeaker_profilesGroupByPayload<T extends speaker_profilesGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Speaker_profilesGroupByOutputType, T['by']> &
       {
@@ -1221,11 +1221,6 @@ export type speaker_profilesFindManyArgs<ExtArgs extends runtime.Types.Extension
    * Skip the first `n` speaker_profiles.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of speaker_profiles.
-   */
   distinct?: Prisma.Speaker_profilesScalarFieldEnum | Prisma.Speaker_profilesScalarFieldEnum[]
 }
 

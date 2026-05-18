@@ -8,7 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
-import type * as runtime from "@prisma/client/runtime/client"
+import type * as runtime from "@prisma/client/runtime/library"
 import type * as $Enums from "../enums"
 import type * as Prisma from "../internal/prismaNamespace"
 
@@ -185,7 +185,7 @@ export type RoomsGroupByOutputType = {
   _max: RoomsMaxAggregateOutputType | null
 }
 
-export type GetRoomsGroupByPayload<T extends roomsGroupByArgs> = Prisma.PrismaPromise<
+type GetRoomsGroupByPayload<T extends roomsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<RoomsGroupByOutputType, T['by']> &
       {
@@ -1248,11 +1248,6 @@ export type roomsFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Skip the first `n` rooms.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of rooms.
-   */
   distinct?: Prisma.RoomsScalarFieldEnum | Prisma.RoomsScalarFieldEnum[]
 }
 

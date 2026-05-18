@@ -8,7 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
-import type * as runtime from "@prisma/client/runtime/client"
+import type * as runtime from "@prisma/client/runtime/library"
 import type * as $Enums from "../enums"
 import type * as Prisma from "../internal/prismaNamespace"
 
@@ -137,7 +137,7 @@ export type Session_speakersGroupByOutputType = {
   _max: Session_speakersMaxAggregateOutputType | null
 }
 
-export type GetSession_speakersGroupByPayload<T extends session_speakersGroupByArgs> = Prisma.PrismaPromise<
+type GetSession_speakersGroupByPayload<T extends session_speakersGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Session_speakersGroupByOutputType, T['by']> &
       {
@@ -1126,11 +1126,6 @@ export type session_speakersFindManyArgs<ExtArgs extends runtime.Types.Extension
    * Skip the first `n` session_speakers.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of session_speakers.
-   */
   distinct?: Prisma.Session_speakersScalarFieldEnum | Prisma.Session_speakersScalarFieldEnum[]
 }
 

@@ -8,7 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
-import type * as runtime from "@prisma/client/runtime/client"
+import type * as runtime from "@prisma/client/runtime/library"
 import type * as $Enums from "../enums"
 import type * as Prisma from "../internal/prismaNamespace"
 
@@ -171,7 +171,7 @@ export type Audit_logsGroupByOutputType = {
   _max: Audit_logsMaxAggregateOutputType | null
 }
 
-export type GetAudit_logsGroupByPayload<T extends audit_logsGroupByArgs> = Prisma.PrismaPromise<
+type GetAudit_logsGroupByPayload<T extends audit_logsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Audit_logsGroupByOutputType, T['by']> &
       {
@@ -1038,11 +1038,6 @@ export type audit_logsFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Skip the first `n` audit_logs.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of audit_logs.
-   */
   distinct?: Prisma.Audit_logsScalarFieldEnum | Prisma.Audit_logsScalarFieldEnum[]
 }
 

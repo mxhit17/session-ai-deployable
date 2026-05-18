@@ -8,7 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
-import type * as runtime from "@prisma/client/runtime/client"
+import type * as runtime from "@prisma/client/runtime/library"
 import type * as $Enums from "../enums"
 import type * as Prisma from "../internal/prismaNamespace"
 
@@ -144,7 +144,7 @@ export type Event_reviewersGroupByOutputType = {
   _max: Event_reviewersMaxAggregateOutputType | null
 }
 
-export type GetEvent_reviewersGroupByPayload<T extends event_reviewersGroupByArgs> = Prisma.PrismaPromise<
+type GetEvent_reviewersGroupByPayload<T extends event_reviewersGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Event_reviewersGroupByOutputType, T['by']> &
       {
@@ -1166,11 +1166,6 @@ export type event_reviewersFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Skip the first `n` event_reviewers.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of event_reviewers.
-   */
   distinct?: Prisma.Event_reviewersScalarFieldEnum | Prisma.Event_reviewersScalarFieldEnum[]
 }
 

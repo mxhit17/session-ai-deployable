@@ -8,7 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
-import type * as runtime from "@prisma/client/runtime/client"
+import type * as runtime from "@prisma/client/runtime/library"
 import type * as $Enums from "../enums"
 import type * as Prisma from "../internal/prismaNamespace"
 
@@ -144,7 +144,7 @@ export type Scheduled_sessionsGroupByOutputType = {
   _max: Scheduled_sessionsMaxAggregateOutputType | null
 }
 
-export type GetScheduled_sessionsGroupByPayload<T extends scheduled_sessionsGroupByArgs> = Prisma.PrismaPromise<
+type GetScheduled_sessionsGroupByPayload<T extends scheduled_sessionsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Scheduled_sessionsGroupByOutputType, T['by']> &
       {
@@ -1244,11 +1244,6 @@ export type scheduled_sessionsFindManyArgs<ExtArgs extends runtime.Types.Extensi
    * Skip the first `n` scheduled_sessions.
    */
   skip?: number
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-   * 
-   * Filter by unique combinations of scheduled_sessions.
-   */
   distinct?: Prisma.Scheduled_sessionsScalarFieldEnum | Prisma.Scheduled_sessionsScalarFieldEnum[]
 }
 

@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ReviewerService } from './reviewer.service';
-import { Role } from '@prisma/client';
+// import { Role } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
@@ -17,7 +17,7 @@ import { SubmitReviewDto } from './dto/reviewer.dto';
 
 @Controller('reviewer')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.REVIEWER)
+@Roles('REVIEWER')
 export class ReviewerController {
   constructor(private readonly reviewerService: ReviewerService) {}
 
