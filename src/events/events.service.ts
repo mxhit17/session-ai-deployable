@@ -91,17 +91,17 @@ export class EventsService {
     });
 
     // ✅ Email should NEVER break event creation
-    try {
-      await this.mailService.sendEventCreatedEmail(
-        result.email,
-        result.event,
-      );
-    } catch (error) {
-      console.error(
-        'Failed to send event creation email:',
-        error,
-      );
-    }
+    // try {
+    //   await this.mailService.sendEventCreatedEmail(
+    //     result.email,
+    //     result.event,
+    //   );
+    // } catch (error) {
+    //   console.error(
+    //     'Failed to send event creation email:',
+    //     error,
+    //   );
+    // }
 
     return {
       event: result.event,
