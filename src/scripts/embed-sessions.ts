@@ -1,7 +1,4 @@
-// import * as dotenv from 'dotenv';
-// dotenv.config({ path: '../.env' });
 import 'dotenv/config';
-// import { PrismaClient } from '../../prisma/generated/client';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { InferenceClient } from '@huggingface/inference';
@@ -66,15 +63,6 @@ run()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
 
-
-
-
-
-// import { InferenceClient } from '@huggingface/inference';
-// import 'dotenv/config';
-// const hf = new InferenceClient(process.env.HF_TOKEN);
-// console.log(process.env.HF_TOKEN);
-
 async function runFeatureExtraction() {
     console.log("HF_TOKEN:", process.env.HF_TOKEN?.slice(0, 6));
     console.log(process.env.HF_TOKEN);
@@ -85,55 +73,3 @@ async function runFeatureExtraction() {
 
   console.log(result);
 }
-
-// runFeatureExtraction();
-
-
-
-// import * as dotenv from 'dotenv';
-// dotenv.config({ path: '../.env' });
-// import { PrismaClient } from '../../prisma/generated/client';
-// import OpenAI from 'openai';
-
-// const prisma = new PrismaClient();
-
-// const openai = new OpenAI({
-//   apiKey: process.env.OPENAI_API_KEY!,
-// });
-
-// async function run() {
-//   const sessions = await prisma.$queryRaw<
-//     { id: string; title: string; abstract: string }[]
-//   >`
-//     SELECT id, title, abstract
-//     FROM sessions
-//     WHERE embedding IS NULL
-//       AND deleted_at IS NULL
-//   `;
-
-//   for (const session of sessions) {
-//     const text = `${session.title} ${session.abstract}`;
-
-//     const response = await openai.embeddings.create({
-//       model: 'text-embedding-3-small',
-//       input: text,
-//     });
-
-//     const vector = response.data[0].embedding;
-//     const vectorString = `[${vector.join(',')}]`;
-
-//     await prisma.$executeRawUnsafe(`
-//       UPDATE sessions
-//       SET embedding = '${vectorString}'::vector
-//       WHERE id = '${session.id}'
-//     `);
-
-//     console.log(`Embedded session ${session.id}`);
-//   }
-
-//   await prisma.$disconnect();
-// }
-
-// run()
-//   .catch(console.error)
-//   .finally(() => prisma.$disconnect());

@@ -1,8 +1,49 @@
+import { InferenceClient } from '@huggingface/inference';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import axios from 'axios';
 
 @Injectable()
 export class AiService {
+  private hf = new InferenceClient(process.env.HF_TOKEN!);
+
+  async chat(message: string, context?: string) {
+    try {
+      const response = await this.hf.chatCompletion({
+        model: 'Qwen/Qwen2.5-7B-Instruct',
+
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are SessionAI assistant. Be concise and helpful.',
+          },
+
+          ...(context
+            ? [
+                {
+                  role: 'system' as const,
+                  content: context,
+                },
+              ]
+            : []),
+
+          {
+            role: 'user',
+            content: message,
+          },
+        ],
+
+        max_tokens: 300,
+        temperature: 0.7,
+      });
+
+      return response.choices[0].message;
+    } catch (error) {
+      console.log(error);
+      throw new Error('AI request failed');
+    }
+  }
+  
   async reviewSession(sessionText: string) {
     const prompt = `
     You are a strict conference reviewer.
@@ -61,4 +102,6 @@ export class AiService {
 
     return JSON.parse(match[0]);
   }
+
+
 }
