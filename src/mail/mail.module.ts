@@ -15,44 +15,49 @@ import { ConfigService } from '@nestjs/config';
 // console.log('📧 MAIL CONFIG DEBUG END');
 
 @Module({
-  // imports: [
-  //   MailerModule.forRoot({
-  //     transport: {
-  //       host: process.env.MAIL_HOST,
-  //       port: Number(process.env.MAIL_PORT),
-  //       secure: false,
-  //       auth: {
-  //         user: process.env.MAIL_USER,
-  //         pass: process.env.MAIL_PASS,
-  //       },
-  //     },
-  //     defaults: {
-  //       from: process.env.MAIL_FROM,
-  //     },
-  //   }),
-  // ],
   imports: [
     MailerModule.forRootAsync({
       inject: [ConfigService],
+
       useFactory: (config: ConfigService) => ({
         transport: {
           host: config.get<string>('MAIL_HOST'),
-          port: Number(config.get<string>('MAIL_PORT')),
-          // secure: false,
-          secure: true, // important for railway deployment.
+
+          // Gmail SSL port
+          port: 465,
+
+          // MUST be true for port 465
+          secure: true,
+
+          // Railway IPv6 fix
+          family: 4,
+
           auth: {
             user: config.get<string>('MAIL_USER'),
             pass: config.get<string>('MAIL_PASS'),
           },
+
+          // Prevent hanging/timeouts
+          connectionTimeout: 10000,
+          greetingTimeout: 10000,
+          socketTimeout: 10000,
+
+          tls: {
+            rejectUnauthorized: false,
+          },
         },
+
         defaults: {
           from: config.get<string>('MAIL_FROM'),
         },
       }),
     }),
   ],
+
   providers: [MailService],
+
   exports: [MailerModule, MailService],
+
   controllers: [MailController],
 })
 export class MailModule {}
