@@ -28,4 +28,6 @@ export class UpdateEventDto {
 
   @IsOptional()
   is_public?: boolean;
+
+  image_url?: string | null;
 }

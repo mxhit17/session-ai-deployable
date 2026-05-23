@@ -3,17 +3,17 @@ import { IsString, IsNotEmpty, IsOptional, IsDateString } from 'class-validator'
 export class CreateEventDto {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  title!: string;
 
   @IsOptional()
   @IsString()
   description?: string;
 
   @IsDateString()
-  start_date: string;
+  start_date!: string;
 
   @IsDateString()
-  end_date: string;
+  end_date!: string;
 
   @IsOptional()
   @IsString()
@@ -21,5 +21,9 @@ export class CreateEventDto {
 
   @IsString()
   @IsNotEmpty()
-  timezone: string;
+  timezone!: string;
+
+  @IsOptional()
+  @IsString()
+  image_url?: string;
 }

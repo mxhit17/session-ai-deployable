@@ -87,14 +87,14 @@ export class SpeakerService {
     return this.prisma.speaker_profiles.upsert({
       where: { user_id: userId },
       update: {
-        ...updateDto, // 👈 now includes profile_photo_url
+        ...updateDto, 
       },
       create: {
         user_id: userId,
         bio: updateDto.bio ?? '',
         organization: updateDto.organization ?? '',
         experience_level: updateDto.experience_level ?? 'Beginner',
-        profile_photo_url: updateDto.profile_photo_url ?? null, // 👈 important
+        profile_photo_url: updateDto.profile_photo_url ?? null, 
       },
     });
   }

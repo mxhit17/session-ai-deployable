@@ -1,3 +1,4 @@
+
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
@@ -38,6 +39,7 @@ model events {
   cfp_start             DateTime?         @db.Timestamp(6)
   cfp_end               DateTime?         @db.Timestamp(6)
   reviewers_per_session Int?              @default(1)
+  image_url             String?
   event_reviewers       event_reviewers[]
   users                 users?            @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
   rooms                 rooms[]

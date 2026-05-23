@@ -13,6 +13,7 @@ import { ReviewerModule } from './reviewer/reviewer.module';
 import { ScheduleModule } from './schedule/schedule.module'
 import { UploadModule } from './upload/upload.module';
 import { MailModule } from './mail/mail.module';
+import { ToolsModule } from './ai/tool-executer.module';
 
 
 @Module({
@@ -32,7 +33,8 @@ import { MailModule } from './mail/mail.module';
     ReviewerModule,
     ScheduleModule,
     UploadModule,
-    MailModule
+    MailModule,
+    ToolsModule
   ],
 })
 export class AppModule {}

@@ -6,5 +6,6 @@ import { PrismaService } from '../common/prisma/prisma.service';
 @Module({
   controllers: [SpeakerController],
   providers: [SpeakerService, PrismaService],
+  exports: [SpeakerService]
 })
 export class SpeakerModule {}

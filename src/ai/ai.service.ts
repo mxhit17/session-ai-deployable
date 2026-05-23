@@ -1,12 +1,16 @@
 import { InferenceClient } from '@huggingface/inference';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import axios from 'axios';
+import { tools } from './tools';
 
 @Injectable()
 export class AiService {
   private hf = new InferenceClient(process.env.HF_TOKEN!);
 
-  async chat(message: string, context?: string) {
+  async chat(
+    message: string,
+    messages: any[] = [],
+  ) {
     try {
       const response = await this.hf.chatCompletion({
         model: 'Qwen/Qwen2.5-7B-Instruct',
@@ -14,24 +18,60 @@ export class AiService {
         messages: [
           {
             role: 'system',
-            content:
-              'You are SessionAI assistant. Be concise and helpful.',
+
+            content: `
+You are SessionAI assistant.
+
+You MUST use tools for ALL event-related requests.
+
+1. If the user wants:
+- event recommendations
+- CFP recommendations
+- conferences to apply to
+- events suitable for the speaker
+- speaking opportunities
+
+USE:
+recommendEventsForSpeaker
+
+Use tools whenever the user asks about:
+- events
+- CFPs
+- organizers
+- event search
+- locations
+- topics
+- conferences
+- event details
+- event summaries
+
+Examples:
+- "Find AI events in Delhi"
+- "Search Flutter conferences"
+- "Find React events in Bangalore"
+- "Summarize this event"
+- "Give me quick details"
+- "Tell me about this conference"
+
+If the user asks for event details or a summary,
+use the summarizeEvent tool.
+
+Never invent event information.
+Always use tools for event-related queries.
+`,
           },
 
-          ...(context
-            ? [
-                {
-                  role: 'system' as const,
-                  content: context,
-                },
-              ]
-            : []),
+          ...messages,
 
           {
             role: 'user',
             content: message,
           },
         ],
+
+        tools,
+
+        tool_choice: 'auto',
 
         max_tokens: 300,
         temperature: 0.7,
@@ -40,10 +80,65 @@ export class AiService {
       return response.choices[0].message;
     } catch (error) {
       console.log(error);
+
       throw new Error('AI request failed');
     }
   }
-  
+
+  async chatWithToolResult({
+    originalMessage,
+    previousMessages,
+    toolCall,
+    toolResult,
+  }: {
+    originalMessage: string;
+    previousMessages: any[];
+    toolCall: any;
+    toolResult: any;
+  }) {
+    const response =
+      await this.hf.chatCompletion({
+        model: 'Qwen/Qwen2.5-7B-Instruct',
+
+        messages: [
+          {
+            role: 'system',
+
+            content: `
+  You are SessionAI assistant.
+
+  Answer naturally using tool data.
+  `,
+          },
+
+          ...previousMessages,
+
+          {
+            role: 'user',
+            content: originalMessage,
+          },
+
+          toolCall,
+
+          {
+            role: 'tool',
+
+            tool_call_id:
+              toolCall.tool_calls[0].id,
+
+            content: JSON.stringify(
+              toolResult,
+            ),
+          },
+        ],
+
+        max_tokens: 300,
+        temperature: 0.7,
+      });
+
+    return response.choices[0].message;
+  }
+
   async reviewSession(sessionText: string) {
     const prompt = `
     You are a strict conference reviewer.
@@ -102,6 +197,4 @@ export class AiService {
 
     return JSON.parse(match[0]);
   }
-
-
 }

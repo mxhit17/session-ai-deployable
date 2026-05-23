@@ -66,6 +66,8 @@ export class EventsService {
         });
       }
 
+      console.log(dto);
+
       const event = await tx.events.create({
         data: {
           title: dto.title,
@@ -74,6 +76,7 @@ export class EventsService {
           end_date: end,
           location: dto.location,
           timezone: dto.timezone,
+          image_url: dto.image_url ?? null,
           created_by: userId,
         },
       });
@@ -188,6 +191,7 @@ export class EventsService {
         end_date: true,
         location: true,
         timezone: true,
+        image_url: true,
         created_at: true,
         cfp_open: true,
         cfp_start: true,
@@ -196,7 +200,7 @@ export class EventsService {
     });
 
     return events;
-    }
+  }
 
   async getEventsByOrganizer(userId: string) {
     const events = await this.prisma.events.findMany({
@@ -228,28 +232,33 @@ export class EventsService {
 
   async getEventById(id: string) {
     const event = await this.prisma.events.findFirst({
-        where: {
+      where: {
         id,
         is_public: true,
         deleted_at: null,
-        },
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        start_date: true,
+        end_date: true,
+        location: true,
+        timezone: true,
+        image_url: true,
+        created_at: true,
+        created_by: true,
+        cfp_open: true,
+        cfp_start: true,
+        cfp_end: true,
+      },
     });
 
     if (!event) {
-        throw new NotFoundException('Event not found');
+      throw new NotFoundException('Event not found');
     }
 
-    return {
-        id: event.id,
-        title: event.title,
-        description: event.description,
-        start_date: event.start_date,
-        end_date: event.end_date,
-        location: event.location,
-        timezone: event.timezone,
-        created_at: event.created_at,
-        created_by: event.created_by,
-    };
+    return event;
   }
 
   async getReviewedSessions(eventId: string) {
@@ -284,6 +293,99 @@ export class EventsService {
         reviewCount: session.reviews.length,
         averageScore: Number(avg.toFixed(2)),
       };
+    });
+  }
+
+  async getEventsWithClosingSoonCfp(
+    days: number = 7,
+  ) {
+    const events = await this.listPublicEvents();
+
+    const now = new Date();
+
+    const futureDate = new Date();
+
+    futureDate.setDate(
+      futureDate.getDate() + days,
+    );
+
+    return events.filter((event) => {
+      if (
+        !event.cfp_start ||
+        !event.cfp_end
+      ) {
+        return false;
+      }
+
+      const cfpStart = new Date(
+        event.cfp_start,
+      );
+
+      const cfpEnd = new Date(
+        event.cfp_end,
+      );
+
+      return (
+        event.cfp_open === true &&
+        now >= cfpStart &&
+        cfpEnd >= now &&
+        cfpEnd <= futureDate
+      );
+    });
+  }
+
+  async searchEvents({
+    topic,
+    location,
+  }: {
+    topic?: string;
+    location?: string;
+  }) {
+    return this.prisma.events.findMany({
+      where: {
+        is_public: true,
+
+        AND: [
+          topic
+            ? {
+                OR: [
+                  {
+                    title: {
+                      contains: topic,
+                      mode: 'insensitive',
+                    },
+                  },
+
+                  {
+                    description: {
+                      contains: topic,
+                      mode: 'insensitive',
+                    },
+                  },
+
+                  // {
+                  //   tags: {
+                  //     has: topic,
+                  //   },
+                  // },
+                ],
+              }
+            : {},
+
+          location
+            ? {
+                location: {
+                  contains: location,
+                  mode: 'insensitive',
+                },
+              }
+            : {},
+        ],
+      },
+
+      orderBy: {
+        start_date: 'asc',
+      },
     });
   }
 }

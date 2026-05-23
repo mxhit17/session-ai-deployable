@@ -12,5 +12,6 @@ import { MailModule } from 'src/mail/mail.module';
   imports: [PrismaModule,MailModule],
   controllers: [EventsController, CfpController, ReviewerPoolController],
   providers: [EventsService, CfpService, ReviewerPoolService],
+  exports: [EventsService]
 })
 export class EventsModule {}
