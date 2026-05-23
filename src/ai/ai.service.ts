@@ -139,56 +139,156 @@ Always use tools for event-related queries.
     return response.choices[0].message;
   }
 
-  async reviewSession(sessionText: string) {
-    const prompt = `
-    You are a strict conference reviewer.
+  // async reviewSession(sessionText: string) {
+  //   const prompt = `
+  //   You are a strict conference reviewer.
 
-    Carefully evaluate how well the session matches the event theme and audience.
+  //   Carefully evaluate how well the session matches the event theme and audience.
 
-    If the session does NOT align with the event topic,
-    you MUST give a low relevance score.
-    If session topic is unrelated to event description,
-    relevance must be between 0 and 1.
-
-
-    Score from 0-10 on:
-    - relevance (alignment with event theme)
-    - clarity
-    - depth
-    - novelty
-
-    Return ONLY valid JSON.
-
-    {
-       "relevance": number,
-       "clarity": number,
-       "depth": number,
-       "novelty": number,
-       "overall_score": number,
-       "reasoning": "short explanation"
-    }
-
-    Context:
-    ${sessionText}
-
-    Respond ONLY with JSON.
-    `;
+  //   If the session does NOT align with the event topic,
+  //   you MUST give a low relevance score.
+  //   If session topic is unrelated to event description,
+  //   relevance must be between 0 and 1.
 
 
-    try {
-      const response = await axios.post(
-        'http://localhost:11434/api/generate',
+  //   Score from 0-10 on:
+  //   - relevance (alignment with event theme)
+  //   - clarity
+  //   - depth
+  //   - novelty
+
+  //   Return ONLY valid JSON.
+
+  //   {
+  //      "relevance": number,
+  //      "clarity": number,
+  //      "depth": number,
+  //      "novelty": number,
+  //      "overall_score": number,
+  //      "reasoning": "short explanation"
+  //   }
+
+  //   Context:
+  //   ${sessionText}
+
+  //   Respond ONLY with JSON.
+  //   `;
+
+
+  //   try {
+  //     const response = await axios.post(
+  //       'http://localhost:11434/api/generate',
+  //       {
+  //         model: 'llama2',
+  //         prompt,
+  //         stream: false,
+  //       },
+  //     );
+
+  //     return this.extractJSON(response.data.response);
+  //   } catch (error) {
+  //     throw new InternalServerErrorException('AI review failed');
+  //   }
+  // }
+
+  async reviewSession({
+    eventTitle,
+    eventDescription,
+    sessionTitle,
+    sessionDescription,
+  }: {
+    eventTitle: string;
+    eventDescription: string;
+    sessionTitle: string;
+    sessionDescription: string;
+  }) {
+    const response = await this.hf.chatCompletion({
+      model: 'Qwen/Qwen2.5-7B-Instruct',
+
+      temperature: 0.2,
+
+      max_tokens: 400,
+
+      response_format: {
+        type: 'json_object',
+      },
+
+      messages: [
         {
-          model: 'llama2',
-          prompt,
-          stream: false,
-        },
-      );
+          role: 'system',
+          content: `
+  You are an expert conference CFP reviewer.
 
-      return this.extractJSON(response.data.response);
-    } catch (error) {
-      throw new InternalServerErrorException('AI review failed');
-    }
+  Your job is to evaluate whether a proposed talk
+  is suitable for a conference/event.
+
+  SCORING RULES:
+
+  - relevance:
+  How strongly the session aligns with the event theme.
+
+  0-1 = completely unrelated
+  2-4 = weak fit
+  5-7 = reasonable fit
+  8-10 = excellent fit
+
+  - clarity:
+  How understandable and well-structured the proposal is.
+
+  - depth:
+  Technical depth and actionable insight.
+
+  - novelty:
+  Originality and uniqueness.
+
+  IMPORTANT:
+  If the session topic does not match the event topic,
+  relevance MUST be very low.
+
+  Return ONLY valid JSON.
+  `,
+        },
+
+        {
+          role: 'user',
+          content: `
+  EVENT:
+
+  Title:
+  ${eventTitle}
+
+  Description:
+  ${eventDescription}
+
+  SESSION:
+
+  Title:
+  ${sessionTitle}
+
+  Description:
+  ${sessionDescription}
+
+  Return:
+
+  {
+    "relevance": number,
+    "clarity": number,
+    "depth": number,
+    "novelty": number,
+    "overall_score": number,
+    "acceptance_probability": number,
+    "strengths": [string],
+    "weaknesses": [string],
+    "reasoning": string
+  }
+  `,
+        },
+      ],
+    });
+
+    return JSON.parse(
+      response.choices[0].message.content || '{}',
+    );
   }
 
   private extractJSON(text: string) {

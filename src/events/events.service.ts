@@ -224,6 +224,7 @@ export class EventsService {
         cfp_open: true,
         cfp_start: true,
         cfp_end: true,
+        image_url: true,
       },
     });
 

@@ -213,19 +213,38 @@ export class SessionsService {
     });
 
     // 🔹 AI async review (non-blocking)
-    const sessionText = `
-      Event Title: ${event.title}
-      Event Description: ${event.description}
-      Session Title: ${session.title}
-      Session Abstract: ${session.abstract}
-    `;
+    setImmediate(async () => {
+      try {
+        const aiReview =
+          await this.aiService.reviewSession({
+            eventTitle: event.title,
+            eventDescription:
+              event.description ?? '',
 
-    // setImmediate(async () => {
-    //   const aiReview = await this.aiService.reviewSession(sessionText);
-    //   if (aiReview) {
-    //     await this.reviewsService.createAIReview(session.id, aiReview);
-    //   }
-    // });
+            sessionTitle: session.title,
+
+            sessionDescription:
+              session.abstract ?? '',
+          });
+
+        if (aiReview) {
+          await this.reviewsService.createAIReview(
+            session.id,
+            aiReview,
+          );
+
+          console.log(
+            `AI review created for session ${session.id}`,
+          );
+        }
+      } catch (error) {
+        console.error(
+          'AI review generation failed:',
+          error,
+        );
+      }
+    });
+    
 
     // Assign Reviewers
     if (session.event_id == null) {
