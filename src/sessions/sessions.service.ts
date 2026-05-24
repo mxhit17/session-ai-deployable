@@ -107,6 +107,7 @@ export class SessionsService {
   // Mock embedding generator (AI plug point)
   private async generateEmbedding(text: string): Promise<number[]> {
     // Call OpenAI / Gemini here
+    // ignore : change just to commit on git.
 
     console.log("HF_TOKEN:", process.env.HF_TOKEN?.slice(0, 6));
     console.log(process.env.HF_TOKEN);
