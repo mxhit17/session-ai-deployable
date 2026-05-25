@@ -255,9 +255,9 @@ export class SessionsService {
       await this.autoAssignReviewers(session.id, session.event_id!);
     }
     // fire-and-forget email (best practice)
-    this.mailService
-      .sendSessionCreatedEmail(user.email, session)
-      .catch(console.error);
+    // this.mailService
+    //   .sendSessionCreatedEmail(user.email, session)
+    //   .catch(console.error);
     return session;
   }
 
@@ -320,15 +320,15 @@ export class SessionsService {
 
     for (const email of emails) {
       if (status === 'ACCEPTED') {
-        this.mailService
-          .sendSessionAcceptedEmail(email, session)
-          .catch(console.error);
+        // this.mailService
+        //   .sendSessionAcceptedEmail(email, session)
+        //   .catch(console.error);
       }
 
       if (status === 'REJECTED') {
-        this.mailService
-          .sendSessionRejectedEmail(email, session)
-          .catch(console.error);
+        // this.mailService
+        //   .sendSessionRejectedEmail(email, session)
+        //   .catch(console.error);
       }
     }
 
